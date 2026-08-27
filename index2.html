@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il Nostro Countdown ❤️</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(
+        135deg,
+        #0b1026 0%,
+        #1a1f5c 35%,
+        #5e3b89 70%,
+        #c04d8e 100%
+    );
+    color:white;
+}
+
+.stars{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+}
+
+.star{
+    position:absolute;
+    width:2px;
+    height:2px;
+    background:white;
+    border-radius:50%;
+    animation:twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle{
+    0%,100%{opacity:.2;}
+    50%{opacity:1;}
+}
+
+.heart{
+    position:absolute;
+    color:rgba(255,255,255,0.15);
+    animation:float 12s linear infinite;
+    font-size:20px;
+    pointer-events:none;
+}
+
+@keyframes float{
+    from{
+        transform:translateY(100vh);
+        opacity:0;
+    }
+    20%{
+        opacity:1;
+    }
+    to{
+        transform:translateY(-120px);
+        opacity:0;
+    }
+}
+
+.container{
+    width:90%;
+    max-width:950px;
+    text-align:center;
+    z-index:2;
+
+    backdrop-filter:blur(20px);
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.15);
+
+    border-radius:30px;
+    padding:40px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.subtitle{
+    font-size:1.2rem;
+    opacity:.95;
+    margin-bottom:30px;
+}
+
+.route{
+    font-size:1.5rem;
+    margin-bottom:30px;
+}
+
+/* Riga con le due città agli estremi della linea del tempo */
+.route-labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.95rem;
+    letter-spacing:0.06em;
+    opacity:.9;
+    margin-top:30px;
+}
+
+.line-container{
+    position:relative;
+    width:100%;
+    height:6px;
+    margin:10px auto 45px;
+}
+
+.line{
+    width:100%;
+    height:6px;
+    border-radius:999px;
+    background:rgba(255,255,255,.15);
+}
+
+.light{
+    position:absolute;
+    left:0;
+    top:-4px;
+    width:14px;
+    height:14px;
+    background:white;
+    border-radius:50%;
+    box-shadow:0 0 20px white;
+    animation:travel 6s linear infinite;
+}
+
+@keyframes travel{
+    from{left:0;}
+    to{left:calc(100% - 14px);}
+}
+
+.countdown{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.card{
+    background:rgba(255,255,255,.08);
+    border-radius:20px;
+    padding:25px;
+}
+
+.number{
+    font-size:3rem;
+    font-weight:bold;
+    font-variant-numeric: tabular-nums;
+}
+
+.label{
+    margin-top:8px;
+    font-size:1rem;
+    opacity:.8;
+}
+
+.distance{
+    margin-top:40px;
+    font-size:1.05rem;
+    line-height:1.8;
+    opacity:.95;
+}
+
+.distance strong{
+    font-size:1.2rem;
+}
+
+.quote{
+    margin-top:30px;
+    font-style:italic;
+    color:#ffe7f5;
+}
+
+.final-message{
+    font-size:3rem;
+    font-weight:bold;
+    color:#fff;
+    text-shadow:0 0 20px pink;
+}
+
+.meeting-date{
+    margin-top:30px;
+    font-size:1.15rem;
+    letter-spacing:.02em;
+}
+
+.meeting-date strong{
+    display:block;
+    margin-top:6px;
+    font-size:1.6rem;
+    color:#ffe7f5;
+    text-shadow:0 0 16px rgba(255,143,199,.6);
+}
+
+/* ============================================================
+   Finestrella impostazioni, ora sotto il countdown
+   ============================================================ */
+.settings-area{
+    margin-top:30px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.settings-toggle{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    color:white;
+    font-size:1.4rem;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    transition:transform .2s ease;
+}
+.settings-toggle:hover{
+    transform:scale(1.08);
+}
+
+.settings-panel{
+    margin-top:16px;
+    width:100%;
+    max-width:280px;
+    background:rgba(20,15,45,.85);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:18px;
+    backdrop-filter:blur(16px);
+    padding:18px;
+    box-shadow:0 15px 45px rgba(0,0,0,.5);
+    display:none;
+    flex-direction:column;
+    gap:10px;
+}
+.settings-panel.open{
+    display:flex;
+}
+.settings-panel label{
+    font-size:.8rem;
+    opacity:.85;
+}
+.settings-panel input[type="datetime-local"]{
+    width:100%;
+    padding:8px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.08);
+    color:white;
+    font-size:.85rem;
+    color-scheme: dark;
+}
+.settings-panel button{
+    margin-top:4px;
+    padding:9px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(135deg,#ff8fc7,#c04d8e);
+    color:white;
+    font-weight:bold;
+    font-size:.85rem;
+    cursor:pointer;
+    transition:opacity .2s ease;
+}
+.settings-panel button:hover{
+    opacity:.85;
+}
+.settings-note{
+    font-size:.68rem;
+    opacity:.6;
+    line-height:1.4;
+}
+
+@media(max-width:768px){
+    .countdown{
+        grid-template-columns:repeat(2,1fr);
+    }
+    .number{
+        font-size:2rem;
+    }
+    .route-labels{
+        font-size:.8rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div id="hearts"></div>
+
+<div class="container">
+
+    <p class="subtitle">
+        Ogni secondo che passa ci avvicina al nostro prossimo bacio ❤️
+    </p>
+
+    <div class="route">
+        Roma 🇮🇹 ↔ Batam 🇮🇩
+    </div>
+
+    <!-- Etichette delle due città agli estremi della linea -->
+  <div class="route-labels">
+	<div>
+		<div>Roma 🇮🇹</div>
+		<div id="romaTime">--:--:--</div>
+	</div>
+
+	<div style="text-align:right;">
+		<div>Batam 🇮🇩</div>
+		<div id="batamTime">--:--:--</div>
+	</div>
+</div>
+
+    <div class="line-container">
+        <div class="line"></div>
+        <div class="light"></div>
+    </div>
+
+    <div id="countdownContent">
+
+        <div class="countdown">
+
+            <div class="card">
+                <div class="number" id="days">0</div>
+                <div class="label">Giorni</div>
+            </div>
+
+            <div class="card">
+                <div class="number" id="hours">0</div>
+                <div class="label">Ore</div>
+            </div>
+
+            <div class="card">
+                <div class="number" id="minutes">0</div>
+                <div class="label">Minuti</div>
+            </div>
+
+            <div class="card">
+                <div class="number" id="seconds">0</div>
+                <div class="label">Secondi</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="meeting-date">
+        Non vedo l'ora che sia il
+        <strong id="meetingDateDisplay">—</strong>
+    </div>
+
+    <div class="distance">
+        <p>
+            <strong id="distanceKm">— km</strong> ci separano.<br>
+            Ma il nostro amore rende la distanza più piccola ogni giorno.
+        </p>
+    </div>
+
+    <div class="quote" id="quote"></div>
+
+    <!-- Finestrella per impostare la data dell'incontro, sotto il countdown -->
+    <div class="settings-area">
+        <button class="settings-toggle" id="settingsToggle" title="Imposta la data dell'incontro">⚙️</button>
+        <div class="settings-panel" id="settingsPanel">
+            <label for="meetingInput">Data del nostro incontro</label>
+            <input type="datetime-local" id="meetingInput">
+            <button id="saveMeeting">Salva</button>
+            <span class="settings-note">La data viene salvata per tutti: chiunque apra questo link vedrà la stessa data.</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+/* ============================================================
+   DATA DEL PROSSIMO INCONTRO, condivisa tramite l'API
+   (/api/meeting-date, salvata sul database Netlify): chiunque
+   apra il link vede e modifica la stessa data.
+   ============================================================ */
+const DEFAULT_MEETING_DATE = "2027-01-01T12:00:00.000Z";
+
+let meetingDate = new Date(DEFAULT_MEETING_DATE);
+
+const dateFormatter = new Intl.DateTimeFormat("it-IT", {
+    day:"numeric",
+    month:"long",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit"
+});
+
+function renderMeetingDateDisplay(){
+    document.getElementById("meetingDateDisplay").textContent =
+        dateFormatter.format(meetingDate);
+}
+
+async function fetchMeetingDate(){
+    try{
+        const res = await fetch("/api/meeting-date");
+        const data = await res.json();
+        if(data.meetingDate){
+            meetingDate = new Date(data.meetingDate);
+        }
+    }catch(err){
+        console.error("Impossibile recuperare la data dell'incontro, uso il default.", err);
+    }
+    renderMeetingDateDisplay();
+    meetingInput.value = toDatetimeLocalValue(meetingDate);
+    startCountdown();
+}
+
+const quotes = [
+    "La distanza è solo un numero.",
+    "Presto saremo insieme ❤️",
+    "Ogni giorno è un giorno in meno.",
+    "Tu sei il mio posto preferito.",
+    "Roma e Batam, un solo cuore."
+];
+
+document.getElementById("quote").innerText =
+quotes[Math.floor(Math.random()*quotes.length)];
+
+function pad(n){
+    return String(n).padStart(2, "0");
+}
+
+let countdownInterval = null;
+
+function renderCountdownCards(){
+    // ricostruisce le card del countdown (utile dopo il messaggio finale,
+    // se l'utente imposta una nuova data futura dalla finestrella)
+    document.getElementById("countdownContent").innerHTML = `
+        <div class="countdown">
+            <div class="card">
+                <div class="number" id="days">0</div>
+                <div class="label">Giorni</div>
+            </div>
+            <div class="card">
+                <div class="number" id="hours">0</div>
+                <div class="label">Ore</div>
+            </div>
+            <div class="card">
+                <div class="number" id="minutes">0</div>
+                <div class="label">Minuti</div>
+            </div>
+            <div class="card">
+                <div class="number" id="seconds">0</div>
+                <div class="label">Secondi</div>
+            </div>
+        </div>
+    `;
+}
+
+function updateCountdown(){
+
+    const now = new Date();
+    const difference = meetingDate - now;
+
+    if(difference <= 0){
+
+        document.getElementById("countdownContent").innerHTML =
+        `<div class="final-message">
+            Finalmente insieme ❤️
+        </div>`;
+
+        if(countdownInterval){
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+
+        return;
+    }
+
+    const days = Math.floor(difference / (1000*60*60*24));
+    const hours = Math.floor((difference / (1000*60*60)) % 24);
+    const minutes = Math.floor((difference / (1000*60)) % 60);
+    const seconds = Math.floor((difference / 1000) % 60);
+
+    const daysEl = document.getElementById("days");
+    if(!daysEl) return; // le card non esistono ancora (es. subito dopo un reset)
+
+    daysEl.textContent = pad(days);
+    document.getElementById("hours").textContent = pad(hours);
+    document.getElementById("minutes").textContent = pad(minutes);
+    document.getElementById("seconds").textContent = pad(seconds);
+}
+
+function startCountdown(){
+    if(countdownInterval){
+        clearInterval(countdownInterval);
+    }
+    renderCountdownCards();
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+/* ============================================================
+   DISTANZA PRECISA ROMA ↔ BATAM (formula dell'emisenoverso / Haversine)
+   ============================================================ */
+const ROME_COORDS  = { lat: 41.9028, lon: 12.4964 };   // Roma, Italia
+const BATAM_COORDS = { lat: 1.0456,  lon: 104.0305 };  // Batam, Indonesia
+const EARTH_RADIUS_KM = 6371;
+
+function toRad(deg){ return deg * (Math.PI / 180); }
+
+function haversineDistanceKm(a, b){
+    const dLat = toRad(b.lat - a.lat);
+    const dLon = toRad(b.lon - a.lon);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+
+    const h = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+
+    return EARTH_RADIUS_KM * c;
+}
+
+const distanceKm = haversineDistanceKm(ROME_COORDS, BATAM_COORDS);
+document.getElementById("distanceKm").textContent =
+    distanceKm.toFixed(1).replace(".", ",") + " km";
+
+/* ============================================================
+   FINESTRELLA IMPOSTAZIONI: scegliere la data dell'incontro
+   ============================================================ */
+const settingsToggle = document.getElementById("settingsToggle");
+const settingsPanel  = document.getElementById("settingsPanel");
+const meetingInput   = document.getElementById("meetingInput");
+const saveMeetingBtn = document.getElementById("saveMeeting");
+
+// precompila il campo con la data attualmente in uso
+function toDatetimeLocalValue(date){
+    const offset = date.getTimezoneOffset();
+    const local = new Date(date.getTime() - offset * 60000);
+    return local.toISOString().slice(0,16);
+}
+
+settingsToggle.addEventListener("click", () => {
+    settingsPanel.classList.toggle("open");
+});
+
+saveMeetingBtn.addEventListener("click", async () => {
+    if(!meetingInput.value) return;
+
+    const newDate = new Date(meetingInput.value);
+
+    saveMeetingBtn.disabled = true;
+    try{
+        const res = await fetch("/api/meeting-date", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ meetingDate: newDate.toISOString() })
+        });
+        const data = await res.json();
+        meetingDate = new Date(data.meetingDate);
+    }catch(err){
+        console.error("Impossibile salvare la data dell'incontro.", err);
+        meetingDate = newDate;
+    }finally{
+        saveMeetingBtn.disabled = false;
+    }
+
+    renderMeetingDateDisplay();
+    startCountdown();
+    settingsPanel.classList.remove("open");
+});
+/* ============================================================
+   OROLOGI LOCALI ROMA E BATAM
+   ============================================================ */
+
+function updateLocalTimes() {
+
+    const roma = new Date().toLocaleTimeString("it-IT", {
+        timeZone: "Europe/Rome",
+        hour: "2-digit",
+        minute: "2-digit"
+            });
+
+    const batam = new Date().toLocaleTimeString("it-IT", {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit"
+            });
+
+    const romaEl = document.getElementById("romaTime");
+    const batamEl = document.getElementById("batamTime");
+
+    if (romaEl) romaEl.textContent = roma;
+    if (batamEl) batamEl.textContent = batam;
+}
+
+updateLocalTimes();
+setInterval(updateLocalTimes, 1000);
+
+// carica la data condivisa e avvia il countdown
+fetchMeetingDate();
+
+// stelle
+
+const starsContainer = document.getElementById("stars");
+
+for(let i=0;i<120;i++){
+
+    const star = document.createElement("div");
+    star.className = "star";
+
+    star.style.left = Math.random()*100 + "%";
+    star.style.top = Math.random()*100 + "%";
+    star.style.animationDelay = Math.random()*3 + "s";
+
+    starsContainer.appendChild(star);
+}
+
+// cuori
+
+const heartsContainer = document.getElementById("hearts");
+
+const heartsSpawner = setInterval(()=>{
+
+    const heart = document.createElement("div");
+
+    heart.className = "heart";
+    heart.innerHTML = "❤";
+
+    heart.style.left = Math.random()*100 + "%";
+    heart.style.fontSize = (Math.random()*20 + 15) + "px";
+
+    heartsContainer.appendChild(heart);
+
+    setTimeout(()=>{
+        heart.remove();
+    },12000);
+
+},700);
+
+</script>
+
+</body>
+</html>
