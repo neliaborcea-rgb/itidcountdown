@@ -218,15 +218,11 @@ body{
 }
 
 /* ============================================================
-   Finestrella impostazioni, ora sotto il countdown
+   Finestrella impostazioni, ora sotto il countdown, tolta
    ============================================================ */
 .settings-area{
-    margin-top:30px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+	display:none;
 }
-
 .settings-toggle{
     width:52px;
     height:52px;
@@ -392,7 +388,7 @@ body{
 
 
     <!-- Finestrella per impostare la data dell'incontro, sotto il countdown -->
-    <div class="settings-area">
+ <div class="settings-area">
         <button class="settings-toggle" id="settingsToggle" title="Imposta la data dell'incontro">⚙️</button>
         <div class="settings-panel" id="settingsPanel">
             <label for="meetingInput">Data del nostro incontro</label>
@@ -402,26 +398,19 @@ body{
 La data viene salvata sul dispositivo che stai utilizzando.
 </span>
         </div>
-    </div>
+    </div> 
 
 </div>
 
 <script>
 
 /* ============================================================
-   DATA DEL PROSSIMO INCONTRO, condivisa tramite l'API
-   (/api/meeting-date, salvata sul database Netlify): chiunque
-   apra il link vede e modifica la stessa data.
+   DATA DEL PROSSIMO INCONTRO, da modificare QUI!!
    ============================================================ */
-const DEFAULT_MEETING_DATE = "2027-01-01T12:00:00.000Z";
+const DEFAULT_MEETING_DATE = "2026-11-01T12:00:00.000Z";
 
 let meetingDate = new Date(DEFAULT_MEETING_DATE);
 
-const savedDate = localStorage.getItem("meetingDate");
-
-if(savedDate){
-    meetingDate = new Date(savedDate);
-}
 const dateFormatter = new Intl.DateTimeFormat("it-IT", {
     day:"numeric",
     month:"long",
