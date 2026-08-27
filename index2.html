@@ -106,6 +106,22 @@ body{
     opacity:.9;
     margin-top:30px;
 }
+#romaTime,
+#batamTime{
+    font-size:0.9rem;
+    margin-top:6px;
+    color:#ffe7f5;
+    font-weight:600;
+    text-shadow:0 0 8px rgba(255,255,255,.2);
+}
+
+#romaWeather,
+#batamWeather{
+    font-size:0.85rem;
+    color:#ffd6ea;
+    font-weight:600;
+    margin-bottom:6px;
+}
 
 .line-container{
     position:relative;
@@ -124,13 +140,10 @@ body{
 .light{
     position:absolute;
     left:0;
-    top:-4px;
-    width:14px;
-    height:14px;
-    background:white;
-    border-radius:50%;
-    box-shadow:0 0 20px white;
-    animation:travel 6s linear infinite;
+    top:-18px;
+    font-size:28px;
+    animation:travel 8s linear infinite;
+    filter:drop-shadow(0 0 10px pink);
 }
 
 @keyframes travel{
@@ -174,9 +187,13 @@ body{
 }
 
 .quote{
-    margin-top:30px;
+    margin-top:20px;
     font-style:italic;
     color:#ffe7f5;
+    font-size:1.2rem;
+    line-height:1.6;
+    min-height:60px;
+    text-shadow:0 0 12px rgba(255,255,255,.25);
 }
 
 .final-message{
@@ -308,21 +325,26 @@ body{
     </div>
 
     <!-- Etichette delle due città agli estremi della linea -->
-  <div class="route-labels">
-	<div>
-		<div>Roma 🇮🇹</div>
-		<div id="romaTime">--:--:--</div>
-	</div>
+<div class="route-labels" id="weatherRow">
+    <div id="romaWeather">🌤️ Roma --°C</div>
+    <div id="batamWeather">🌤️ Batam --°C</div>
+</div>
 
-	<div style="text-align:right;">
-		<div>Batam 🇮🇩</div>
-		<div id="batamTime">--:--:--</div>
-	</div>
+<div class="route-labels">
+    <div>
+        <div>Roma 🇮🇹</div>
+        <div id="romaTime">--:--</div>
+    </div>
+
+    <div style="text-align:right;">
+        <div>Batam 🇮🇩</div>
+        <div id="batamTime">--:--</div>
+    </div>
 </div>
 
     <div class="line-container">
         <div class="line"></div>
-        <div class="light"></div>
+       <div class="light">❤️</div>
     </div>
 
     <div id="countdownContent">
@@ -352,12 +374,14 @@ body{
         </div>
 
     </div>
-
+  <div class="quote" id="quote"></div>
+	
     <div class="meeting-date">
         Non vedo l'ora che sia il
         <strong id="meetingDateDisplay">—</strong>
     </div>
-
+  
+	
     <div class="distance">
         <p>
             <strong id="distanceKm">— km</strong> ci separano.<br>
@@ -365,7 +389,7 @@ body{
         </p>
     </div>
 
-    <div class="quote" id="quote"></div>
+
 
     <!-- Finestrella per impostare la data dell'incontro, sotto il countdown -->
     <div class="settings-area">
@@ -374,7 +398,9 @@ body{
             <label for="meetingInput">Data del nostro incontro</label>
             <input type="datetime-local" id="meetingInput">
             <button id="saveMeeting">Salva</button>
-            <span class="settings-note">La data viene salvata per tutti: chiunque apra questo link vedrà la stessa data.</span>
+           <span class="settings-note">
+La data viene salvata sul dispositivo che stai utilizzando.
+</span>
         </div>
     </div>
 
@@ -391,6 +417,11 @@ const DEFAULT_MEETING_DATE = "2027-01-01T12:00:00.000Z";
 
 let meetingDate = new Date(DEFAULT_MEETING_DATE);
 
+const savedDate = localStorage.getItem("meetingDate");
+
+if(savedDate){
+    meetingDate = new Date(savedDate);
+}
 const dateFormatter = new Intl.DateTimeFormat("it-IT", {
     day:"numeric",
     month:"long",
@@ -404,27 +435,36 @@ function renderMeetingDateDisplay(){
         dateFormatter.format(meetingDate);
 }
 
-async function fetchMeetingDate(){
-    try{
-        const res = await fetch("/api/meeting-date");
-        const data = await res.json();
-        if(data.meetingDate){
-            meetingDate = new Date(data.meetingDate);
-        }
-    }catch(err){
-        console.error("Impossibile recuperare la data dell'incontro, uso il default.", err);
-    }
-    renderMeetingDateDisplay();
-    meetingInput.value = toDatetimeLocalValue(meetingDate);
-    startCountdown();
-}
+
 
 const quotes = [
-    "La distanza è solo un numero.",
-    "Presto saremo insieme ❤️",
-    "Ogni giorno è un giorno in meno.",
-    "Tu sei il mio posto preferito.",
-    "Roma e Batam, un solo cuore."
+
+"Ogni secondo che passa ci avvicina ❤️",
+"La distanza è solo un numero.",
+"Presto saremo insieme ❤️",
+"Ogni giorno è un giorno in meno.",
+"Tu sei il mio posto preferito.",
+"Roma e Batam, un solo cuore.",
+"Il mondo è grande, ma il mio cuore trova sempre te.",
+"Stiamo contando i giorni verso il prossimo abbraccio.",
+"Anche oggi siamo sotto lo stesso cielo.",
+"Un giorno in meno da aspettare.",
+"Sei la parte migliore delle mie giornate.",
+"Il nostro amore attraversa continenti e oceani.",
+"Ogni alba ci porta più vicini.",
+"Ogni notte ci avvicina al prossimo incontro.",
+"Ci separano i chilometri, non i cuori.",
+"Tu sei la mia destinazione preferita.",
+"La distanza mette alla prova, l'amore supera tutto.",
+"Roma e Batam, unite da un unico cuore.",
+"Un pensiero per te attraversa il mondo in un istante.",
+"Il prossimo bacio è sempre più vicino ❤️",
+"Un giorno racconteremo questa attesa sorridendo.",
+"La pazienza rende ancora più bello il ritrovarsi.",
+"Ci stiamo costruendo un futuro giorno dopo giorno.",
+"Il tempo passa, ma il sentimento cresce.",
+"Ogni countdown finisce, il nostro amore no ❤️"
+
 ];
 
 document.getElementById("quote").innerText =
@@ -549,30 +589,23 @@ settingsToggle.addEventListener("click", () => {
     settingsPanel.classList.toggle("open");
 });
 
-saveMeetingBtn.addEventListener("click", async () => {
+saveMeetingBtn.addEventListener("click", () => {
+
     if(!meetingInput.value) return;
 
-    const newDate = new Date(meetingInput.value);
+    meetingDate = new Date(meetingInput.value);
 
-    saveMeetingBtn.disabled = true;
-    try{
-        const res = await fetch("/api/meeting-date", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ meetingDate: newDate.toISOString() })
-        });
-        const data = await res.json();
-        meetingDate = new Date(data.meetingDate);
-    }catch(err){
-        console.error("Impossibile salvare la data dell'incontro.", err);
-        meetingDate = newDate;
-    }finally{
-        saveMeetingBtn.disabled = false;
-    }
+    localStorage.setItem(
+        "meetingDate",
+        meetingDate.toISOString()
+    );
 
     renderMeetingDateDisplay();
+
     startCountdown();
+
     settingsPanel.classList.remove("open");
+
 });
 /* ============================================================
    OROLOGI LOCALI ROMA E BATAM
@@ -602,8 +635,44 @@ function updateLocalTimes() {
 updateLocalTimes();
 setInterval(updateLocalTimes, 1000);
 
-// carica la data condivisa e avvia il countdown
-fetchMeetingDate();
+async function updateWeather() {
+
+    try {
+
+       const roma = await fetch(
+    "https://wttr.in/Rome?format=j1"
+);
+
+        const romaData = await roma.json();
+
+        document.getElementById("romaWeather").textContent =
+        "☀️ Roma " +
+        romaData.current_condition[0].temp_C +
+        "°C";
+
+    } catch(e){}
+
+    try {
+
+      const batam = await fetch(
+    "https://wttr.in/Batam?format=j1"
+);
+
+        const batamData = await batam.json();
+
+        document.getElementById("batamWeather").textContent =
+        "🌤️ Batam " +
+        batamData.current_condition[0].temp_C +
+        "°C";
+
+    } catch(e){}
+
+}
+
+updateWeather();
+setInterval(updateWeather, 1800000);
+	// carica la data condivisa e avvia il countdown
+renderMeetingDateDisplay(); meetingInput.value = toDatetimeLocalValue(meetingDate); startCountdown();
 
 // stelle
 
